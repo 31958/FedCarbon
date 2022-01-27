@@ -1,0 +1,106 @@
+FedAdam
+Start 21:39
+End 21:54
+
+Energy consumption: 11516548 mj = 0.00000153170088 mtCO2e in US
+749851
+735457
+732766
+737513
+740143
+732885
+737569
+736135
+732203
+735683
+730543
+737326
+738047
+738048
+737431
+464948
+
+Server log:
+
+INFO flower 2022-01-12 21:39:15,084 | app.py:77 | Flower server running (insecure, 3 rounds)
+INFO flower 2022-01-12 21:39:15,084 | server.py:118 | Initializing global parameters
+INFO flower 2022-01-12 21:39:15,085 | server.py:300 | Using initial parameters provided by strategy
+INFO flower 2022-01-12 21:39:15,086 | server.py:120 | Evaluating initial parameters
+INFO flower 2022-01-12 21:39:15,086 | server.py:133 | FL starting
+DEBUG flower 2022-01-12 21:39:19,839 | server.py:251 | fit_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 21:44:12,062 | server.py:260 | fit_round received 2 results and 0 failures
+DEBUG flower 2022-01-12 21:44:12,378 | server.py:201 | evaluate_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 21:44:23,926 | server.py:210 | evaluate_round received 2 results and 0 failures
+DEBUG flower 2022-01-12 21:44:23,926 | server.py:251 | fit_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 21:49:18,545 | server.py:260 | fit_round received 2 results and 0 failures
+DEBUG flower 2022-01-12 21:49:18,883 | server.py:201 | evaluate_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 21:49:29,924 | server.py:210 | evaluate_round received 2 results and 0 failures
+DEBUG flower 2022-01-12 21:49:29,924 | server.py:251 | fit_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 21:54:22,795 | server.py:260 | fit_round received 2 results and 0 failures
+DEBUG flower 2022-01-12 21:54:23,105 | server.py:201 | evaluate_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 21:54:34,264 | server.py:210 | evaluate_round received 2 results and 0 failures
+INFO flower 2022-01-12 21:54:34,264 | server.py:172 | FL finished in 919.1769156
+INFO flower 2022-01-12 21:54:34,268 | app.py:119 | app_fit: losses_distributed [(1, 2.3025872707366943), (2, 2.302597761154175), (3, 2.302619457244873)]
+INFO flower 2022-01-12 21:54:34,268 | app.py:120 | app_fit: metrics_distributed {}
+INFO flower 2022-01-12 21:54:34,269 | app.py:121 | app_fit: losses_centralized []
+INFO flower 2022-01-12 21:54:34,269 | app.py:122 | app_fit: metrics_centralized {}
+
+Client 1:
+
+DEBUG flower 2022-01-12 21:12:14,396 | connection.py:36 | ChannelConnectivity.IDLE
+DEBUG flower 2022-01-12 21:12:14,397 | connection.py:36 | ChannelConnectivity.CONNECTING
+INFO flower 2022-01-12 21:12:14,397 | app.py:61 | Opened (insecure) gRPC connection
+DEBUG flower 2022-01-12 21:12:14,402 | connection.py:36 | ChannelConnectivity.READY
+1563/1563 [==============================] - 291s 184ms/step - loss: 1.8881 - accuracy: 0.3182
+313/313 [==============================] - 11s 34ms/step - loss: 2.3175 - accuracy: 0.1000
+1563/1563 [==============================] - 293s 187ms/step - loss: 1.6656 - accuracy: 0.4022
+313/313 [==============================] - 11s 34ms/step - loss: 2.3466 - accuracy: 0.1000
+1563/1563 [==============================] - 290s 186ms/step - loss: 1.5032 - accuracy: 0.4608
+313/313 [==============================] - 11s 34ms/step - loss: 2.1859 - accuracy: 0.2685
+DEBUG flower 2022-01-12 21:27:27,378 | connection.py:68 | Insecure gRPC channel closed
+INFO flower 2022-01-12 21:27:27,379 | app.py:72 | Disconnect and shut down
+
+(venv) C:\Users\Zenov\PycharmProjects\carbonFL>python experiments/fedadam/client.py
+2022-01-12 21:39:13.631081: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cudart64_110.dll'; dlerror: cudart64_110.dll not found
+2022-01-12 21:39:13.631378: I tensorflow/stream_executor/cuda/cudart_stub.cc:29] Ignore above cudart dlerror if you do not have a GPU set up on your machine.
+2022-01-12 21:39:16.460166: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cudart64_110.dll'; dlerror: cudart64_110.dll not found
+2022-01-12 21:39:16.460743: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cublas64_11.dll'; dlerror: cublas64_11.dll not found
+2022-01-12 21:39:16.461269: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cublasLt64_11.dll'; dlerror: cublasLt64_11.dll not found
+2022-01-12 21:39:16.461769: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cufft64_10.dll'; dlerror: cufft64_10.dll not found
+2022-01-12 21:39:16.462388: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'curand64_10.dll'; dlerror: curand64_10.dll not found
+2022-01-12 21:39:16.462886: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cusolver64_11.dll'; dlerror: cusolver64_11.dll not found
+2022-01-12 21:39:16.463448: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cusparse64_11.dll'; dlerror: cusparse64_11.dll not found
+2022-01-12 21:39:16.463951: W tensorflow/stream_executor/platform/default/dso_loader.cc:64] Could not load dynamic library 'cudnn64_8.dll'; dlerror: cudnn64_8.dll not found
+2022-01-12 21:39:16.464089: W tensorflow/core/common_runtime/gpu/gpu_device.cc:1850] Cannot dlopen some GPU libraries. Please make sure the missing libraries mentioned above are installed
+ properly if you would like to use GPU. Follow the guide at https://www.tensorflow.org/install/gpu for how to download and setup the required libraries for your platform.
+Skipping registering GPU devices...
+2022-01-12 21:39:16.464613: I tensorflow/core/platform/cpu_feature_guard.cc:151] This TensorFlow binary is optimized with oneAPI Deep Neural Network Library (oneDNN) to use the following
+CPU instructions in performance-critical operations:  AVX AVX2
+To enable them in other operations, rebuild TensorFlow with the appropriate compiler flags.
+DEBUG flower 2022-01-12 21:39:17,983 | connection.py:36 | ChannelConnectivity.IDLE
+DEBUG flower 2022-01-12 21:39:17,985 | connection.py:36 | ChannelConnectivity.CONNECTING
+INFO flower 2022-01-12 21:39:17,985 | app.py:61 | Opened (insecure) gRPC connection
+DEBUG flower 2022-01-12 21:39:17,991 | connection.py:36 | ChannelConnectivity.READY
+1563/1563 [==============================] - 292s 184ms/step - loss: 1.9355 - accuracy: 0.2993
+313/313 [==============================] - 11s 33ms/step - loss: 2.3026 - accuracy: 0.1000
+1563/1563 [==============================] - 294s 188ms/step - loss: 1.8619 - accuracy: 0.3254
+313/313 [==============================] - 11s 34ms/step - loss: 2.3026 - accuracy: 0.1000
+1563/1563 [==============================] - 292s 187ms/step - loss: 1.8344 - accuracy: 0.3270
+313/313 [==============================] - 11s 34ms/step - loss: 2.3026 - accuracy: 0.1000
+DEBUG flower 2022-01-12 21:54:34,280 | connection.py:68 | Insecure gRPC channel closed
+INFO flower 2022-01-12 21:54:34,281 | app.py:72 | Disconnect and shut down
+
+Client 2:
+
+DEBUG flower 2022-01-12 21:39:19,833 | connection.py:36 | ChannelConnectivity.IDLE
+DEBUG flower 2022-01-12 21:39:19,834 | connection.py:36 | ChannelConnectivity.CONNECTING
+INFO flower 2022-01-12 21:39:19,835 | app.py:61 | Opened (insecure) gRPC connection
+DEBUG flower 2022-01-12 21:39:19,839 | connection.py:36 | ChannelConnectivity.READY
+1563/1563 [==============================] - 292s 184ms/step - loss: 1.9176 - accuracy: 0.3071
+313/313 [==============================] - 11s 33ms/step - loss: 2.3026 - accuracy: 0.1000
+1563/1563 [==============================] - 294s 188ms/step - loss: 1.8716 - accuracy: 0.3203
+313/313 [==============================] - 11s 34ms/step - loss: 2.3026 - accuracy: 0.1000
+1563/1563 [==============================] - 292s 187ms/step - loss: 1.8301 - accuracy: 0.3409
+313/313 [==============================] - 11s 34ms/step - loss: 2.3026 - accuracy: 0.1000
+DEBUG flower 2022-01-12 21:54:34,280 | connection.py:68 | Insecure gRPC channel closed
+INFO flower 2022-01-12 21:54:34,281 | app.py:72 | Disconnect and shut down

@@ -1,0 +1,76 @@
+FedAdagrad
+Start 20:09
+End 20:24
+
+Energy consumption: 11384285 mj = 0.00000151410991 mtCO2e in US
+885866
+746417
+744512
+745925
+732687
+742270
+735976
+735092
+733539
+730969
+731559
+734947
+735205
+736881
+730725
+181715
+
+Server log:
+
+INFO flower 2022-01-12 20:08:37,822 | app.py:77 | Flower server running (insecure, 3 rounds)
+INFO flower 2022-01-12 20:08:37,823 | server.py:118 | Initializing global parameters
+INFO flower 2022-01-12 20:08:37,823 | server.py:300 | Using initial parameters provided by strategy
+INFO flower 2022-01-12 20:08:37,823 | server.py:120 | Evaluating initial parameters
+INFO flower 2022-01-12 20:08:37,824 | server.py:133 | FL starting
+DEBUG flower 2022-01-12 20:09:05,594 | server.py:251 | fit_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 20:13:52,121 | server.py:260 | fit_round received 2 results and 0 failures
+DEBUG flower 2022-01-12 20:13:52,421 | server.py:201 | evaluate_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 20:14:03,934 | server.py:210 | evaluate_round received 2 results and 0 failures
+DEBUG flower 2022-01-12 20:14:03,934 | server.py:251 | fit_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 20:18:55,319 | server.py:260 | fit_round received 2 results and 0 failures
+DEBUG flower 2022-01-12 20:18:55,643 | server.py:201 | evaluate_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 20:19:07,050 | server.py:210 | evaluate_round received 2 results and 0 failures
+DEBUG flower 2022-01-12 20:19:07,051 | server.py:251 | fit_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 20:23:59,685 | server.py:260 | fit_round received 2 results and 0 failures
+DEBUG flower 2022-01-12 20:23:59,962 | server.py:201 | evaluate_round: strategy sampled 2 clients (out of 2)
+DEBUG flower 2022-01-12 20:24:11,234 | server.py:210 | evaluate_round received 2 results and 0 failures
+INFO flower 2022-01-12 20:24:11,235 | server.py:172 | FL finished in 933.4110781999999
+INFO flower 2022-01-12 20:24:11,237 | app.py:119 | app_fit: losses_distributed [(1, 2.302628993988037), (2, 2.303069829940796), (3, 2.305541515350342)]
+INFO flower 2022-01-12 20:24:11,237 | app.py:120 | app_fit: metrics_distributed {}
+INFO flower 2022-01-12 20:24:11,238 | app.py:121 | app_fit: losses_centralized []
+INFO flower 2022-01-12 20:24:11,238 | app.py:122 | app_fit: metrics_centralized {}
+
+Client 1:
+
+DEBUG flower 2022-01-12 20:09:05,589 | connection.py:36 | ChannelConnectivity.IDLE
+DEBUG flower 2022-01-12 20:09:05,590 | connection.py:36 | ChannelConnectivity.CONNECTING
+INFO flower 2022-01-12 20:09:05,590 | app.py:61 | Opened (insecure) gRPC connection
+DEBUG flower 2022-01-12 20:09:05,593 | connection.py:36 | ChannelConnectivity.READY
+1563/1563 [==============================] - 286s 181ms/step - loss: 1.9194 - accuracy: 0.3093
+313/313 [==============================] - 11s 33ms/step - loss: 2.3026 - accuracy: 0.1000
+1563/1563 [==============================] - 291s 186ms/step - loss: 1.8572 - accuracy: 0.3210
+313/313 [==============================] - 11s 35ms/step - loss: 2.3031 - accuracy: 0.1000
+1563/1563 [==============================] - 292s 187ms/step - loss: 1.8140 - accuracy: 0.3346
+313/313 [==============================] - 11s 34ms/step - loss: 2.3055 - accuracy: 0.1000
+DEBUG flower 2022-01-12 20:24:11,251 | connection.py:68 | Insecure gRPC channel closed
+INFO flower 2022-01-12 20:24:11,252 | app.py:72 | Disconnect and shut down
+
+Client 2:
+
+DEBUG flower 2022-01-12 20:09:04,307 | connection.py:36 | ChannelConnectivity.IDLE
+DEBUG flower 2022-01-12 20:09:04,307 | connection.py:36 | ChannelConnectivity.CONNECTING
+INFO flower 2022-01-12 20:09:04,309 | app.py:61 | Opened (insecure) gRPC connection
+DEBUG flower 2022-01-12 20:09:04,313 | connection.py:36 | ChannelConnectivity.READY
+1563/1563 [==============================] - 286s 181ms/step - loss: 1.9319 - accuracy: 0.2987
+313/313 [==============================] - 11s 33ms/step - loss: 2.3026 - accuracy: 0.1000
+1563/1563 [==============================] - 291s 186ms/step - loss: 1.8823 - accuracy: 0.3116
+313/313 [==============================] - 11s 35ms/step - loss: 2.3031 - accuracy: 0.1000
+1563/1563 [==============================] - 292s 187ms/step - loss: 1.7895 - accuracy: 0.3397
+313/313 [==============================] - 11s 35ms/step - loss: 2.3055 - accuracy: 0.1000
+DEBUG flower 2022-01-12 20:24:11,251 | connection.py:68 | Insecure gRPC channel closed
+INFO flower 2022-01-12 20:24:11,252 | app.py:72 | Disconnect and shut down

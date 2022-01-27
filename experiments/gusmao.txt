@@ -1,0 +1,8 @@
+dirichlet
+
+def create_lda_partitions(
+https://github.com/adap/flower/blob/c483c3c088d4d5a6069e9c50a240282b31582f44/src/py/flwr/dataset/utils/common.py#L376
+
+https://arxiv.org/abs/2003.00295
+
+https://github.com/adap/flower/blob/main/examples/simulation/simulation.py
