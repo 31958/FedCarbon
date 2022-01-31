@@ -12,9 +12,13 @@ from flwr.server.strategy import FedAvg
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
 
-def start_server(num_rounds: int, num_clients: int, fraction_fit: float):
+def start_server(num_rounds: int, fit_clients: int, test_clients: int, fraction_fit: float):
     """Start the server with a slightly adjusted FedAvg strategy."""
-    strategy = FedAvg(min_available_clients=num_clients, fraction_fit=fraction_fit)
+    strategy = FedAvg(
+        min_fit_clients = fit_clients,
+        min_eval_clients = test_clients,
+        min_available_clients = fit_clients + test_clients,
+        fraction_fit=fraction_fit)
     # Exposes the server by default on port 8080
     fl.server.start_server(strategy=strategy, config={"num_rounds": num_rounds},  server_address="localhost:8080")
 
@@ -40,19 +44,19 @@ def start_client(dataset: Tuple[Tuple[np.ndarray, np.ndarray], Tuple[np.ndarray,
             model.set_weights(parameters)
             # Remove steps_per_epoch if you want to train over the full dataset
             # https://keras.io/api/models/model_training_apis/#fit-method
-            model.fit(x_train, y_train, epochs=1, batch_size=32, steps_per_epoch=3)
+            model.fit(x_train, y_train, epochs=1, batch_size=20)
             return model.get_weights(), len(x_train), {}
 
         def evaluate(self, parameters, config):
             """Evaluate using provided parameters."""
             model.set_weights(parameters)
-            loss, accuracy = model.evaluate(x_test, y_test)
+            loss, accuracy = model.evaluate(x_test, y_test, batch_size=20)
             return loss, len(x_test), {"accuracy": accuracy}
 
     # Start Flower client
     fl.client.start_numpy_client("localhost:8080", client=CifarClient())
 
-def run_simulation(num_rounds: int, num_clients: int, fraction_fit: float):
+def run_simulation(num_rounds: int, fit_clients: int, test_clients, fraction_fit: float):
     """Start a FL simulation."""
 
     # This will hold all the processes which we are going to create
@@ -60,7 +64,7 @@ def run_simulation(num_rounds: int, num_clients: int, fraction_fit: float):
 
     # Start the server
     server_process = Process(
-        target=start_server, args=(num_rounds, num_clients, fraction_fit)
+        target=start_server, args=(num_rounds, fit_clients, test_clients, fraction_fit)
     )
     server_process.start()
     processes.append(server_process)
@@ -70,15 +74,19 @@ def run_simulation(num_rounds: int, num_clients: int, fraction_fit: float):
 
     train, test = tf.keras.datasets.cifar10.load_data()
 
-    train = train[:num_clients * 100]
-    test = train[:num_clients * 50]
+    n = fit_clients + test_clients
+
+    samples = 100
+
+    train = (train[0][:n * samples],train[1][:n * samples])
+    test = (test[0][:n * samples],test[1][:n * samples])
 
     # Load the dataset partitions
-    train_partitions, pdf = flwr.dataset.utils.common.create_lda_partitions(dataset = train, num_partitions=num_clients, concentration=0.1)
-    test_partitions, pdf = flwr.dataset.utils.common.create_lda_partitions(dataset = test, num_partitions=num_clients,concentration=0.1)
+    train_partitions, pdf = flwr.dataset.utils.common.create_lda_partitions(dataset = train, num_partitions=n, concentration=0.1)
+    test_partitions, pdf = flwr.dataset.utils.common.create_lda_partitions(dataset = test, num_partitions=n,concentration=0.1)
 
     # Start all the clients
-    for i in range (0, len(train_partitions)):
+    for i in range (0, n):
         client_process = Process(target=start_client, args=((train_partitions[i],test_partitions[i]),))
         client_process.start()
         processes.append(client_process)
@@ -89,4 +97,4 @@ def run_simulation(num_rounds: int, num_clients: int, fraction_fit: float):
 
 
 if __name__ == "__main__":
-    run_simulation(num_rounds=10, num_clients=10, fraction_fit=0.5)
+    run_simulation(num_rounds=10, fit_clients=10, test_clients=2, fraction_fit=0.5)
