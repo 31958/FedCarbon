@@ -7,7 +7,6 @@ import flwr as fl
 import numpy as np
 import tensorflow as tf
 from flwr.common import Weights, parameter
-import flwr.server.strategy.fedadam
 
 os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
@@ -18,15 +17,10 @@ def start_server(num_rounds: int, fit_clients: int, test_clients: int, fraction_
     weights: Weights = model.weights
 
     strategy = fl.server.strategy.FedAdam(
-        #server learning rate
         eta=0.01,
-        #client learning rate
         eta_l=0.316,
-        #degree of adaptability
         tau=0.001,
-        #moment
         beta_1=0.9,
-        #second moment
         beta_2=0.99,
         min_fit_clients = fit_clients,
         min_eval_clients = test_clients,
