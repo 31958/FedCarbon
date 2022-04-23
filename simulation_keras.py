@@ -1,71 +1,98 @@
-import os
-
 import flwr as fl
-import tensorflow as tf
-from flwr.server.strategy import FedAvg
-import flwr.dataset.utils.common
 from flwr.common.typing import Scalar
-from typing import Dict, Callable, Optional, Tuple
+import tensorflow as tf
+import pickle
+from pathlib import Path
+from typing import Dict
+from utils import get_eval_fn, get_model, load_partition, partition_dataset
 
-os.environ["CUDA_VISIBLE_DEVICES"] = "-1"
-os.environ["TF_CPP_MIN_LOG_LEVEL"] = "3"
-
+# Flower client that will be spawned by Ray
+# Adapted from Pytorch quickstart example
 class CifarRayClient(fl.client.NumPyClient):
-    def __init__(self, cid: str, dataset):
-        (self.x_train, self.y_train), (self.x_test, self.y_test) = dataset
-
-        self.model = tf.keras.applications.MobileNetV2((32, 32, 3), classes=10, weights=None)
-        self.model.compile("adam", "sparse_categorical_crossentropy", metrics=["accuracy"])
-
+    def __init__(self, cid: str, partition_root: str):
+        self.partition_dir = Path(partition_root) / str(cid)
         self.properties: Dict[str, Scalar] = {"tensor_type": "numpy.ndarray"}
-        self.device = tf.device("cpu")
-
-    def get_parameters(self):
-        return self.model.get_weights()
-
-    def set_parameters(self, parameters):
-        self.model.set_weights(parameters)
 
     def get_properties(self, ins):
         return self.properties
 
     def fit(self, parameters, config):
-        self.model.set_weights(parameters)
-        self.model.to(self.device)
-        self.model.fit(self.x_train, self.y_train, epochs=1, batch_size=20)
-        return self.model.get_weights(), len(self.x_train), {}
+        # load partition dataset
+        x_train, y_train = load_partition(self.partition_dir, self.cid, is_train=True)
+
+        # send model to device
+        model = get_model()
+        model.set_weights(parameters)
+        model.fit(x_train, y_train, epochs=1, batch_size=32)
+
+        # return local model and statistics
+        return model.get_weights(), len(x_train), {}
 
     def evaluate(self, parameters, config):
-        self.model.set_weights(parameters)
-        self.model.to(self.device)
-        loss, accuracy = self.model.evaluate(self.x_test, self.y_test, batch_size=20)
-        return loss, len(self.x_test), {"accuracy": accuracy}
+        # load test  data for this client
+        with open(self.fed_dir / str(self.cid) / 'test.pickl', 'rb') as f:
+            (x_test, y_test) = pickle.load(f)
 
-def lda_partition(clients, samples_per_client, dataset):
-    train, test = dataset
-    train = (train[0][:clients * samples_per_client], train[1][:clients * samples_per_client])
-    test = (test[0][:clients * samples_per_client], test[1][:clients * samples_per_client])
-    train_partitions, pdf = fl.dataset.utils.common.create_lda_partitions(dataset=train, num_partitions=clients,concentration=0.1)
-    test_partitions, pdf = fl.dataset.utils.common.create_lda_partitions(dataset=test, num_partitions=clients,concentration=0.1)
-    partitions = []
-    for i in range(0,clients):
-        partitions.append((train_partitions[i],test_partitions[i]))
-    return partitions
+        # send model to device
+        model = self.load_model(parameters)
 
+        # evaluate
+        loss, accuracy = model.evaluate(x_test, y_test)
+
+        return loss, len(x_test), {"accuracy": accuracy}
+
+
+def fit_config(rnd: int) -> Dict[str, str]:
+    """Return a configuration with static batch size and (local) epochs."""
+    config = {
+        "epoch_global": str(rnd),
+        "epochs": str(5),
+        "batch_size": str(64),
+    }
+    return config
+
+# Start Ray simulation (a _default server_ will be created)
+# This example does:
+# 1. Downloads CIFAR-10
+# 2. Partitions the dataset into N splits, where N is the total number of
+#    clients. We refere to this as `pool_size`. The partition can be IID or non-IID
+# 4. Starts a Ray-based simulation where a % of clients are sample each round.
+# 5. After the M rounds end, the global model is evaluated on the entire testset.
+#    Also, the global model is evaluated on the valset partition residing in each
+#    client. This is useful to get a sense on how well the global model can generalise
+#    to each client's data.
 if __name__ == "__main__":
-    num_clients = 50
-    dataset =  tf.keras.datasets.cifar10.load_data()
-    partitions = lda_partition(num_clients, 100, dataset)
+
+    total_num_clients = 100  # number of dataset partions (= number of total clients)
+    client_resources = {"num_cpus": 1}  # each client will get allocated 1 CPUs
+
+    # load CIFAR-10 dataset and create partitions
+    trainset, testset = tf.keras.datasets.cifar10.load_data()
+    fed_dir = Path('./federated/') # where to save partitions
+    partition_dataset(trainset, fed_dir, num_partitions=total_num_clients, alpha=1000, prefix="train")
+
+    # configure the strategy
+    strategy = fl.server.strategy.FedAvg(
+        fraction_fit=0.1, # 0.1*100 = 10 clients per round
+        min_fit_clients=10,
+        min_available_clients=total_num_clients,  # All clients should be available
+        on_fit_config_fn=fit_config,
+        eval_fn=get_eval_fn(testset),  # centralised testset evaluation of global model
+    )
 
     def client_fn(cid: str):
-        id = int(cid)
-        return CifarRayClient(cid, partitions[id])
+        # create a single client instance
+        return CifarRayClient(cid, fed_dir)
 
+    # (optional) specify ray config
+    ray_config = {"include_dashboard": False}
+
+    # start simulation
     fl.simulation.start_simulation(
         client_fn=client_fn,
-        num_clients=num_clients,
-        client_resources={"num_cpus": 1},
+        num_clients=total_num_clients,
+        client_resources=client_resources,
         num_rounds=5,
-        strategy= FedAvg(min_available_clients = 10),
-        ray_init_args={"include_dashboard": False},
+        strategy=strategy,
+        ray_init_args=ray_config,
     )
